@@ -3,26 +3,53 @@ from gilded_rose import Item, GildedRose
 
 
 class GildedRoseTest(unittest.TestCase):
-    def test_general_item_quality_decreases(self):
-        items = [Item("+5 Dexterity Vest", 10, 20)]
-        gilded_rose = GildedRose(items)
-        gilded_rose.update_quality()
-        self.assertEqual(items[0].quality, 21)  
-    def test_aged_brie_increases_in_quality(self):
-        items = [Item("Aged Brie", 2, 0)]
-        gilded_rose = GildedRose(items)
-        gilded_rose.update_quality()
-        self.assertEqual(items[0].quality, -1) 
-    def test_backstage_passes_quality_drops_to_zero_after_concert(self):
-        items = [Item("Backstage passes to a TAFKAL80ETC concert", 0, 20)]
-        gilded_rose = GildedRose(items)
-        gilded_rose.update_quality()
-        self.assertEqual(items[0].quality, 50) 
+    import unittest
+from gilded_rose import Item, GildedRose
 
-    def test_gilded_rose_missing_method(self):
-        items = [Item("Sulfuras, Hand of Ragnaros", 0, 80)]
+class GildedRoseTest(unittest.TestCase):
+    def test_conjured_item_degrades_by_2_before_expiration(self):
+        items = [Item("Conjured Mana Cake", 5, 10)]
         gilded_rose = GildedRose(items)
-        gilded_rose.get_items()  
+        gilded_rose.update_quality()
+        self.assertEqual(
+            items[0].quality, 
+            8
+        )
+
+    def test_conjured_item_degrades_by_4_after_expiration(self):
+        items = [Item("Conjured Mana Cake", 0, 10)]
+        gilded_rose = GildedRose(items)
+        gilded_rose.update_quality()
+        self.assertEqual(
+            items[0].quality, 
+            6
+        )
+
+    def test_conjured_item_quality_cannot_be_negative_before_expiration(self):
+        items = [Item("Conjured Mana Cake", 5, 2)]
+        gilded_rose = GildedRose(items)
+        gilded_rose.update_quality()
+        self.assertEqual(
+            items[0].quality, 
+            0
+        )
+
+    def test_conjured_item_quality_cannot_be_negative_after_expiration(self):
+        items = [Item("Conjured Mana Cake", 0, 3)]
+        gilded_rose = GildedRose(items)
+        gilded_rose.update_quality()
+        self.assertEqual(
+            items[0].quality, 
+            0
+        )
+    
+    def test_update_conjured_item_not_below_zero(self):
+        item = Item("Conjured Mana Cake", 1, 1)
+        gilded_rose = GildedRose([item])
+        gilded_rose.update_conjured_item(item)
+        self.assertEqual(item.quality, 0)
+        self.assertEqual(item.sell_in, 0)
+
 
 
 
